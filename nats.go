@@ -73,6 +73,12 @@ func (n *Nats) client(c goja.ConstructorCall) *goja.Object {
 		natsOptions.Token = cfg.Token
 	}
 
+	if cfg.JWT != "" && cfg.Seed != "" {
+		if err := natsio.UserJWTAndSeed(cfg.JWT, cfg.Seed)(&natsOptions); err != nil {
+			common.Throw(rt, fmt.Errorf("failed to configure JWT/Seed: %w", err))
+		}
+	}
+
 	conn, err := natsOptions.Connect()
 	if err != nil {
 		common.Throw(rt, err)
@@ -346,6 +352,8 @@ type Configuration struct {
 	Servers []string
 	Unsafe  bool
 	Token   string
+	JWT     string // <-- Add this
+	Seed    string // <-- Add this
 }
 
 type Message struct {

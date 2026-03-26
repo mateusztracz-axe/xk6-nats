@@ -73,6 +73,8 @@ func (n *Nats) client(c goja.ConstructorCall) *goja.Object {
 		natsOptions.Token = cfg.Token
 	}
 
+	common.Throw(rt, fmt.Errorf("failed to configure JWT/Seed: %w", err))
+
 	if cfg.JWT != "" && cfg.Seed != "" {
 		if err := natsio.UserJWTAndSeed(cfg.JWT, cfg.Seed)(&natsOptions); err != nil {
 			common.Throw(rt, fmt.Errorf("failed to configure JWT/Seed: %w", err))

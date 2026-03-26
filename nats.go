@@ -63,7 +63,7 @@ func (n *Nats) client(c goja.ConstructorCall) *goja.Object {
 	}
 
 	natsOptions := natsio.GetDefaultOptions()
-	natsOptions.Servers = cfg.Servers
+	natsOptions.Servers = []string{cfg.Servers}
 	if cfg.Unsafe {
 		natsOptions.TLSConfig = &tls.Config{
 			InsecureSkipVerify: true,
@@ -72,8 +72,6 @@ func (n *Nats) client(c goja.ConstructorCall) *goja.Object {
 	if cfg.Token != "" {
 		natsOptions.Token = cfg.Token
 	}
-
-	common.Throw(rt, fmt.Errorf("failed to configure JWT/Seed: %w", err))
 
 	if cfg.JWT != "" && cfg.Seed != "" {
 		if err := natsio.UserJWTAndSeed(cfg.JWT, cfg.Seed)(&natsOptions); err != nil {
@@ -351,7 +349,7 @@ func (n *Nats) Request(subject, data string, headers map[string]string) (Message
 }
 
 type Configuration struct {
-	Servers []string
+	Servers string
 	Unsafe  bool
 	Token   string
 	JWT     string // <-- Add this
